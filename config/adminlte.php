@@ -45,7 +45,7 @@ return [
     |
     */
 
-    'skin' => 'black',
+    'skin' => 'blue-light',
 
     /*
     |--------------------------------------------------------------------------
@@ -125,19 +125,20 @@ return [
             'label_color' => 'success',
         ],
         [
+            'text'        => 'Lista de funcionários',
+            'url'         => '/user',
+            'icon'        => 'pencil-square-o',
+            'label'       => '',
+            'label_color' => 'success',
+        ],
+        [
             'text'        => 'Devoluções de equipamentos',
             'url'         => '/devolucao',
             'icon'        => 'refresh',
             'label'       => '',
             'label_color' => 'success',
         ],
-        [
-            'text'        => 'Manutenção de equipamentos',
-            'url'         => '/manutencoes',
-            'icon'        => 'wrench',
-            'label'       => '',
-            'label_color' => 'success',
-        ],
+       
         'INFORMAÇÕES DA CONTA',
        
         [

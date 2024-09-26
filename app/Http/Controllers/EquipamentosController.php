@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Equipamentos;
 use App\Repositories\Contracts\EquipamentosRepositoryInterface;
+use PDF;
 
 class EquipamentosController extends Controller
 {
@@ -23,7 +24,7 @@ class EquipamentosController extends Controller
 
     public function index()
     {  //Este método serve para exibição da tela de pricipal dos equipamentos cadastrados, onde será exibido por nome em ordem alfabética e decrescente
-        $equipamentos = $this->repo->all();
+        $equipamentos = $this->repo->getAll();
         return view('equipamentos.index', compact('equipamentos'));
 
         
@@ -37,7 +38,8 @@ class EquipamentosController extends Controller
     public function create()
     { //Este método serve para exibir a view de cadastro de equipamentos
         
-        return view('equipamentos.create');
+       
+       return view('equipamentos.create');
     }
 
     /**
@@ -57,12 +59,12 @@ class EquipamentosController extends Controller
        
        
         $request->validate([
-             'eqdescricao'          => 'required|max:30|unique:equipamentos',
-             'marca'                => 'required|:max:30',
-             'modelo'               => 'required|:max:30',
-             'status'               => 'required',
+             'eqdescricao'          => 'required|string|max:20|unique:equipamentos',
+             'marca'                => 'required|:max:20',
+             'modelo'               => 'required|:max:20',
              'codidentificacao'     => 'required|unique:equipamentos|max:30',
-             'dt_aquisicao'         => 'required|date',
+             'dt_aquisicao'         => 'required|date|date_format:Y-m-d|before_or_equal:'.\Carbon\Carbon::now()->format('Y-m-d'),
+             'etiqueta'             => 'required|numeric',
             
         ],
         
@@ -79,10 +81,13 @@ class EquipamentosController extends Controller
             'modelo.required'=>'O campo modelo deve ser preenchido obrigatóriamente',
             'codidentificacao.required'=>'O campo de número de série deve ser preenchido obrigatóriamente',
             'codidentificacao.unique'=>'O campo número de série é único',
-            'eqdescricao.max'=>'É permitido no máximo 30 digitos',
-            'eqdescricao.unique'=>'Não é permitido cadastrar tipos de equipamentos iguais',
-            'modelo.max'=>'É permitido no máximo 30 dígitos',
-                   
+            'codidentificacao.max'=>'Número de série deve ter o máximo de 20 dígitos',
+            'eqdescricao.max'=>'É tipo de equipamento deve ter o máximo 20 digitos',
+            'eqdescricao.unique'=>'Não é permitido cadastrar nomes de equipamentos iguais',
+            'modelo.max'=>'O modelo do equipamento deve ter máximo 20 dígitos',
+            'etiqueta.required'=> "Insira o número de equiqueta para cadastrar o equipamento",
+            'etiqueta.numeric'=>'Somente é permitida a inserção de números inteiros no campo etiqueta',
+            'dt_aquisicao.before_or_equal'=>  'Data inválida, só é possivel cadastrar com datas inferiores a hoje',
             ]
     
          
@@ -98,13 +103,13 @@ class EquipamentosController extends Controller
 
 
 
-                $equipamentos =Equipamentos::create([
+                $equipamentos =$this->repo->create([
                   'eqdescricao'        => $request->get('eqdescricao'),
                   'marca'              => $request->get('marca'),
                   'modelo'             => $request->get('modelo'),
-                  'status'             => $request->get('status'),
                   'codidentificacao'   => $request->get('codidentificacao'),
                   'dt_aquisicao'       => $request->get('dt_aquisicao'),
+                  'etiqueta'           => $request->get('etiqueta'),
                   
                  
                 ]);
@@ -114,9 +119,9 @@ class EquipamentosController extends Controller
                     e envia o alerta informando que  foi salvo com sucesso e também redireciona 
                     para a página de equipamentos
                     */
-                $equipamentos->save();
-                alert()->success('Equipamento adicionado com sucesso');
-                return redirect('/equipamentos');
+                    $equipamentos->save();
+                            alert()->success('Equipamento adicionado com sucesso');
+                             return redirect('/equipamentos');
 
     }
 
@@ -147,7 +152,7 @@ class EquipamentosController extends Controller
         
 
      */
-        $equipamentos = Equipamentos::find($id);
+        $equipamentos = $this->repo->getById($id);
 
         return view('equipamentos.edit', compact('equipamentos'));
     }
@@ -175,12 +180,13 @@ class EquipamentosController extends Controller
 
     {
         $request->validate([
-            'eqdescricao'           => 'required|max:30',
+            'eqdescricao'           => 'required|string|max:30',
             'marca'                 => 'required|max:30',
             'modelo'                => 'required|max:30',
             'status'                => 'required',
             'codidentificacao'      => 'required|max:30',
             'dt_aquisicao'          => 'required|date',
+           
             
                  
         ],
@@ -207,14 +213,16 @@ class EquipamentosController extends Controller
                 onde é feita uma busca pelo id do equipamento selecionado e gravadas novas as informações
                 */
              
-               $equipamentos = Equipamentos::find($id);
+                $equipamentos = $this->repo->getById($id);
                 $equipamentos->eqdescricao        = $request->get('eqdescricao');
                 $equipamentos->marca              = $request->get('marca');
                 $equipamentos->modelo             = $request->get('modelo');
-                $equipamentos->status              = $request->get('status');
+                $equipamentos->status             = $request->get('status');
                 $equipamentos->codidentificacao   = $request->get ('codidentificacao');
                 $equipamentos->dt_aquisicao       = $request->get ('dt_aquisicao');
-               
+                $equipamentos->etiqueta           =$request->get('etiqueta');
+                
+                
                 $equipamentos->save();
                 alert()->success('Equipamento atualizado com sucesso');
                 return redirect('/equipamentos');
@@ -235,22 +243,33 @@ class EquipamentosController extends Controller
      Este método verifica se o equiapamento está disponível para a remoção, 
      caso contrário o mesmo não será excluído
      */
+        
+
+        
+        //$equipamentos = Equipamentos::::whereStatus('Disponível')->find($id);
        
-        $equipamentos = Equipamentos::whereStatus('Disponível')->find($id);
-       
+        $equipamentos=$this->repo->getWithStatus($id);
       
         if(!$equipamentos){
             alert()->error('Equipamento não pode ser removido, pois está em utilização');
             return redirect('/equipamentos');
         }
 
-        $equipamentos->delete();
+        $equipamentos=$this->repo->delete($id);
 
         alert()->success('Equipamento excluido com sucesso');
 
         return redirect('/equipamentos');
     }
 
-    
+    public function generatePDF()
+
+    {
+        
+        $equipamentos=$this->repo->getAll();
+        $pdf = PDF::loadView('equipamentos/equipamentosPDF',['equipamentos'=> $equipamentos])->setPaper('a4', 'landscape');
+        return $pdf->download('equipamentos.pdf');
+
+    }
    
 }

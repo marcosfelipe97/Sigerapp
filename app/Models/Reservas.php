@@ -13,15 +13,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Reservas extends Model
 {
-    use SoftDeletes;
+    
     /**
      * @var array
      */
     protected $fillable = [
+        'id',
         'fkequipamentos',
         'user_id',
         'dtagendamento',
-        'horario'
+        'turno'
 
 
     ];
@@ -32,7 +33,7 @@ class Reservas extends Model
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

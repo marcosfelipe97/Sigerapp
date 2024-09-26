@@ -8,15 +8,6 @@
 
 @section('content')
   
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
     <style>
   .uper {
     margin-top: 40px;
@@ -45,8 +36,15 @@
          
          
           <div class="form-group">
-         <label for="horario">Horário:</label> 
-              <input type="time" id="horario"class="form-control" name="horario">
+         <label for="turno">Turno:</label> 
+         {!!
+                  Form::select('turno',[
+                                  'Manhã' =>'Manhã',
+                              	  'Tarde' =>'Tarde'  ,
+                                  'Noite' =>'Noite',
+                                ],
+                               ['placeholder' => 'Selecione o turno'], ['class' => 'form-control'],);
+         !!}
          </div>
           <div class="form-group">
               
@@ -66,8 +64,7 @@
                 'fkequipamentos',
                 $equipamentos->pluck('eqdescricao','id'),
                 old('fkequipamentos') ?? request()->get('fkequipamentos'),
-                [
-                'class' => 'form-control',
+                ['placeholder' =>'Selecione o equipamento'  ,   'class' => 'form-control',
                 'required' => 'required'
                 ]
             )

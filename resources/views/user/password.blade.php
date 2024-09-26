@@ -27,22 +27,22 @@
     {{csrf_field()}}
             <div class="form-group">
                 <label for="name">Nome:</label>
-                <input type="text" name="name" class="form-control">
+                <input type="text" name="name" class="form-control"  value="{{auth()->user()->name}}" />
             </div>
 
             <div class="form-group">
                 <label for="matricula">Matricula:</label>
-                <input type="text" name="matricula" class="form-control">
+                <input type="text" name="matricula" class="form-control" value="{{auth()->user()->matricula}}"/>
             </div>
 
            
             <div class="form-group">
                 <label for="email">E-mail:</label>
-                <input type="email" name="email" class="form-control">
+                <input type="email" name="email" class="form-control" value="{{auth()->user()->email}}" />
             </div>
             <div class="form-group">
                 <label for="telefone">Telefone:</label>
-                <input type="text" name="telefone" class="form-control">
+                <input type="text" name="telefone" class="form-control" value="{{auth()->user()->telefone}}" />
             </div>
 
             <div class="form-group">

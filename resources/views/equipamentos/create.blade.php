@@ -31,9 +31,15 @@
   <form method="post" action="{{ route('equipamentos.store') }}">
           <div class="form-group">
               @csrf
-              <label for="eqdescricao">Tipo de Equipamento:</label>
-              <input type="text" class="form-control" name="eqdescricao" value="{{old('eqdescricao')}}" autofocus />
-          </div>
+              <label for="eqdescricao">Nome do Equipamento:</label>
+              <input type="text" class="form-control" name="eqdescricao" value=" {{old('eqdescricao')}}" autofocus />
+            </div>
+            <div class="form-group">
+            <label for="etiqueta">Etiqueta:</label>
+              <input type="text" class="form-control" name="etiqueta" value="{{old('etiqueta')}}" autofocus />
+            </div>
+          
+          
 	  <div class="form-group">
  		<label for="marca">Marca do equipamento:</label>
         	<input type="text" class="form-control" name="marca" autofocus value="{{old('marca')}}"/>
@@ -53,13 +59,13 @@
 		 <div class="form-group">
 			<label for="dt_aquisicao">Data de aquisição do equipamento:</label>
 			{!!
-				Form::date('dt_aquisicao', \Carbon\Carbon::now(),['class' => 'form-control']);
+				Form::date('dt_aquisicao',\Carbon\Carbon::now(),['class' => 'form-control']);
 
                         !!}		
 	
           <div class="form-group">
  	       
-        	<input type="hidden" class="form-control" name="status" value="Disponível"/>
+        	
 	    </div>
           <button type="submit" class="btn btn-primary">Incluir</button>
           <a href="{{ route('equipamentos.index')}}" class="btn btn-primary">Voltar</a>

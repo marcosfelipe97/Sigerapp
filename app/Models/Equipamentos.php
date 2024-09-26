@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 /**
  * Class Equipamentos
@@ -11,17 +11,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Equipamentos extends Model
 {
-    use SoftDeletes;
+   
     /**
      * @var array
      */
     protected $fillable = [
+        'id',
         'eqdescricao',
         'marca',
         'modelo',
         'status',
         'codidentificacao',
         'dt_aquisicao',
+        'etiqueta',
 
     ];
     /**
@@ -31,7 +33,7 @@ class Equipamentos extends Model
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+   
 
     /**
      * @param $query
@@ -60,4 +62,7 @@ class Equipamentos extends Model
     {
         return $this->hasOne(Manutencoes::class,'fkequipamentos', 'id');
     }
+
+
+   
 }

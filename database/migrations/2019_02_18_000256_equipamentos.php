@@ -14,14 +14,15 @@ class Equipamentos extends Migration
     public function up()
     {
         Schema::create('equipamentos', function (Blueprint $table) {
-            $table->softDeletes();
-            $table->increments('id')->onDelete('cascade');
-            $table->string('eqdescricao');
+            
+            $table->increments('id');
+            $table->text('eqdescricao');
             $table->string('marca');
             $table->string('modelo');
-            $table->string('status');
+            $table->string('status')->default('Disponível');
             $table->string('codidentificacao')->unique();
-            $table->date('dt_aquisicao');
+            $table->date('dt_aquisicao')->format('d.m.Y');;
+            $table->integer('etiqueta');
             $table->timestamps();
         });
     }

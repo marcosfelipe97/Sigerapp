@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Funcoes extends Model
 {
     protected $fillable = [
+        'id',
         'cargo',
         
       ];

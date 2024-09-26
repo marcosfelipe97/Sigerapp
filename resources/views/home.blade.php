@@ -8,5 +8,12 @@
 
 @section('content')
     <p>Você está logado como {{auth()->user()->name}}</p>
+
+
+
+
+
+
+    
     
 @stop
